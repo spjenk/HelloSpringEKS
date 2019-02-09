@@ -32,6 +32,10 @@ mvn install
 docker container run --name hello -p 8080:8080 -d spjenk/hello
 curl http://localhost:8080/hello
 ```
+* push to dockerhub
+```
+docker push spjenk/hello:latest
+```
 
 ## Add Kubernetes 
 We are going to run Kubernetes locally first and deploy to EKS in the next step
@@ -44,8 +48,19 @@ kubectl config use-context docker-for-desktop
 ```
 helm create chart
 ```
-* Updated chart YAMl files 
-* installed the helm chart
+* Updated chart 'values' YAMl file with the following 
+```
+image:
+  repository: spjenk/hello
+  tag: latest
+  pullPolicy: IfNotPresent
+```
+```
+service:
+  type: LoadBalancer
+  port: 8080
+```
+* deploy
 ```
 helm install --name hello chart
 ```
@@ -115,6 +130,9 @@ Find the external url
 kubectl get svc -o wide
 ```
 
+## Cost saving tips 
+* Scale horizontally (i.e. use small instance sizes) 
+* If you know the application will not be used at certain times (e.g. outside working hours) then update the auto scaling group for the worker nodes to min: 0, desired: 0 during those times
 
 
 ## References  
